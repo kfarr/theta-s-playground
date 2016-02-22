@@ -1,0 +1,22 @@
+{
+  "name": "theta-s-playground",
+  "version": "1.0.0",
+  "description": "just playing around",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kfarr/theta-s-playground.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kfarr/theta-s-playground/issues"
+  },
+  "homepage": "https://github.com/kfarr/theta-s-playground#readme",
+  "dependencies": {
+    "osc-client": "^1.1.0"
+  }
+}
