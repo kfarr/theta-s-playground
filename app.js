@@ -13,7 +13,7 @@ var filename;
 // client.listImages({entryCount:1, maxSize:1, includeThumb:'False'}).then(function(res){
 
 // #TODO: Does not work, try using exact code from the README file to simply replicate ability of that code to take a picture. Then modify to listall. Hypothesis why below code doesn't work: sessionID is not required by ThetaS API but it is required by the osc js library so it's not resolving the "pending" state of the promise.
-
+/*
 client.listImages({entryCount:'1', maxSize:'1'}).then(function(res){
   // code here;
   console.log('listImages block running');
@@ -25,4 +25,24 @@ client.listImages({entryCount:'1', maxSize:'1'}).then(function(res){
 }).catch(function (error) {
   console.log('error error');
   console.log(error);
+});
+*/
+
+client.startSession().then(function(res){
+  sessionId = res.body.results.sessionId;
+  return client.takePicture(sessionId);
+  })
+
+.then(function (res) {
+  var pictureUri = res.body.results.fileUri;
+  console.log('pictureUri :%s',pictureUri);
+
+  var path = pictureUri.split('/');
+  filename = path.pop();
+  return client.getImage(pictureUri);
+})
+.then(function(res){
+  var imgData = res.body;
+  fs.writeFile(filename,imgData);
+  return client.closeSession(sessionId);
 });

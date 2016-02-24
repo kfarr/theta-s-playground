@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/kfarr/theta-s-playground#readme",
   "dependencies": {
-    "osc-client": "^1.1.0"
+    "osc-client": "^1.1.0",
+    "osc-client-theta_s": "0.0.1",
+    "request": "^2.69.0"
   }
 }
