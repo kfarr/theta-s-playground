@@ -2,11 +2,10 @@
 An experiment to access the theta s api using node.js.
 
 # Using Theta S Playground
-git clone https://github.com/kfarr/theta-s-playground.git .
-npm install
-connect to the theta-s via your computer's wifi
-node app-theta.js
-
+    git clone https://github.com/kfarr/theta-s-playground.git .
+    npm install
+    connect to the theta-s via your computer's wifi
+    node app-theta.js
 
 # Current state - FAIL
 * neither osc-client nor osc-client-theta_s libraries appear to access the theta-s
