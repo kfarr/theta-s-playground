@@ -8,8 +8,10 @@ An experiment to access the theta s api using node.js.
     node app-theta.js
 
 # Current state - working
+* once theta s is connected, takes photo and shows it 
 * uses osc-client-theta_s libraries
 * borrows heavily from https://github.com/natelevine/Gauger
+
 
 # Some helpful dev docs
 * Example using CURL: http://qiita.com/FePlus/items/aaeca40468d49786e2f5

@@ -1,48 +1,65 @@
 var fs = require('fs');
-var OscClientClass = require('osc-client').OscClient;
+var ThetaSOscClient = require('osc-client-theta_s').ThetaSOscClient;
 
 var domain = '192.168.1.1';
 var port = '80';
-var client = new OscClientClass(domain, port);
+
+var thetaClient = new ThetaSOscClient(domain, port);
 var sessionId;
-var filename;
+var fileName;
 
-// console.log(client.listImages({entryCount:5, maxSize:10, includeThumb:false}));
-
-// console.log(client._listAll({entryCount:1, sort:"newest"}));
-// client.listImages({entryCount:1, maxSize:1, includeThumb:'False'}).then(function(res){
-
-// #TODO: Does not work, try using exact code from the README file to simply replicate ability of that code to take a picture. Then modify to listall. Hypothesis why below code doesn't work: sessionID is not required by ThetaS API but it is required by the osc js library so it's not resolving the "pending" state of the promise.
-/*
-client.listImages({entryCount:'1', maxSize:'1'}).then(function(res){
-  // code here;
-  console.log('listImages block running');
-  console.log(res.res.body.results);
-  return res.res.body.results;
-}).then(function(err){
-  console.log('error block log');
-  return 'error block return';
-}).catch(function (error) {
-  console.log('error error');
-  console.log(error);
-});
-*/
-
-client.startSession().then(function(res){
-  sessionId = res.body.results.sessionId;
-  return client.takePicture(sessionId);
+// module.exports = function (socket) {
+  thetaClient.startSession().then(function (res) {
+    //Grab the session id
+    sessionId = res.body.results.sessionId;
+    console.log('set options on theta client');
+    return thetaClient.setOptions(sessionId, {captureMode:"image"})
   })
+  .then(function (res) {
+    console.log('starting capture');
+    return thetaClient.takePicture(sessionId);
+//    return thetaClient.startCapture(sessionId);
 
-.then(function (res) {
-  var pictureUri = res.body.results.fileUri;
-  console.log('pictureUri :%s',pictureUri);
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
 
-  var path = pictureUri.split('/');
-  filename = path.pop();
-  return client.getImage(pictureUri);
-})
-.then(function(res){
-  var imgData = res.body;
-  fs.writeFile(filename,imgData);
-  return client.closeSession(sessionId);
-});
+  // Delay for camera to write image -- #TODO there has got to be a better way to do this
+  var interval = 8000;
+  // Number of keyframes to grab
+  var count = 3;
+
+  setTimeout(function () {
+    Promise.resolve()
+//    console.log('stopping capture')/
+//    thetaClient.stopCapture(sessionId)
+    .then(function (_res) {
+      console.log('running listall');
+      // need to get the unique video uri
+      return thetaClient.listAll({entryCount:1, sort:"newest"});
+    })
+    .then(function (res) {
+      fileName = res.body.results.entries[0].name;
+      console.log('res.body.results.entries' + res.body.results.entries);
+      console.log('running getimage on:');
+      console.log(fileName);
+      return thetaClient.getImage(res.body.results.entries[0].uri, "full");
+    })
+    .then(function (res) {
+      console.log('writing file called:');
+      console.log(fileName);
+      fs.writeFile(fileName, res.body);
+      //somehow emit the data through the socket to front end
+    })
+    .then(function (err) {
+      //don't close session yet
+      //call python script with the fileName
+      console.log('closing the session');
+      return thetaClient.closeSession(sessionId);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }, interval);
+// };
